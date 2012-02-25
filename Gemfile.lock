@@ -110,6 +110,10 @@ GEM
       shoulda-matchers (~> 1.0.0)
     shoulda-context (1.0.0)
     shoulda-matchers (1.0.0)
+    simplecov (0.6.1)
+      multi_json (~> 1.0)
+      simplecov-html (~> 0.5.3)
+    simplecov-html (0.5.3)
     sprockets (2.0.3)
       hike (~> 1.2)
       rack (~> 1.0)
@@ -137,4 +141,5 @@ DEPENDENCIES
   rspec-rails (= 2.8.1)
   sass-rails (~> 3.1.5)
   shoulda (= 3.0.0)
+  simplecov
   uglifier (>= 1.0.3)

@@ -19,5 +19,6 @@ group :test, :development do
 	gem 'rspec-rails',      '2.8.1'
 	gem 'shoulda',          '3.0.0'
 	gem 'factory_girl',     '2.6.0'
-  gem 'database_cleaner', '0.7.1' 
+  gem 'database_cleaner', '0.7.1'
+	gem 'simplecov'
 end
