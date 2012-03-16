@@ -1,0 +1,32 @@
+<div id="top">
+  <div id="logo">
+    <a href="/"><img src="/images/logo.gif" alt="Cordel" /></a>
+  </div>
+  <% if current_user %>
+  <div id="user">
+    <a href="/users/<%= current_user.id %>/edit"><img src="<%= current_user.profile_image_url %>" style="width: 14px; height: 14px" alt="@<%= current_user.twitter_username %>" /> @<%= current_user.twitter_username %></a>
+    &nbsp; <a href="/user_sessions/destroy">Logout</a>
+  </div>
+  <% else %>
+  <div id="login">
+    <%= link_to image_tag("twitter.png"), "/auth/twitter" %>
+    <%= link_to image_tag("facebook.png"), "/auth/facebook" %> 
+  </div>
+  <% end %>
+  <ul id="menu">
+    <li><a href="/"<%= "class='active'" if controller.controller_name == 'index' %>>Home</a></li>
+    <li><a href="/books"<%= "class='active'" if controller.controller_name == 'books' %>>Books</a></li>
+    <% if current_user %>
+      <li><a href="/users/<%= current_user.id %>/edit"<%= "class='active'" if controller.controller_name == 'users' %>>Profile</a></li>
+    <% end %>
+  </ul>
+  <div style="clear: both"></div>
+</div>
+<div id="content">
+  <%= yield %>
+  <div style="clear: both"></div>
+</div>
+<div id="bottom">
+  <b>Cordel</b> is a personal virtual library made by @cmilfont @henriquegogo @rodrigodealer and @razenha<br />
+  <span class="white">"Open your mind and go away"</span>
+</div>

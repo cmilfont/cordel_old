@@ -1,0 +1,126 @@
+<div id="add_books"></div>
+<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.0.7-gpl/ext-all.js"></script>
+
+<script>
+/*
+
+var DJR = function() {
+	this.ajax = function(object, callback, error, method, url, params) {};
+	for (var action in this.routes) {
+      this[action] = function(act) {
+          return function(object, callback, error) {
+						//..
+          }
+      }(action);
+  }
+}
+
+var EmpresaController = function(){
+	DJR.call(this);
+}; 
+EmpresaController.prototype.routes = {};
+
+var EmpresaController = function(){
+	this.controller = DJR;
+	this.controller();
+}; 
+EmpresaController.prototype.routes = {};
+
+
+
+if(typeof Array.prototype.add == "undefined") {
+  Array.prototype.add = function(item) {
+      this[this.length] = item;
+      return this;
+  }
+}
+
+Ext.define('Documento', {
+	config: { vendedor: ""},
+	constructor: function(cfg) {  this.initConfig(cfg);   }
+});
+
+Ext.define('PedidoDeVenda', {
+	extend: 'Documento',
+	incluirVendedor: function(nome) { 
+		this.vendedor = nome;
+	}
+});
+
+Ext.define('NotaFiscal', {
+	mixins: {
+		pedido: 'PedidoDeVenda'
+	},
+	extend: 'Documento'
+});
+var notaFiscal = new NotaFiscal
+notaFiscal.incluirVendedor("Milfont");
+notaFiscal.getVendedor();
+
+var notaFiscal = new NotaFiscal({valor:200});
+var produto = {valor: 50, temEstoque: function() {return true} };
+notaFiscal.incluirProduto( produto );
+
+*/
+
+	var Cordel = function(){
+		var token, that = this;
+		
+		that.upload = function(){
+        var form = this.up('form').getForm();
+        if(form.isValid()){
+            form.submit({
+                url: '/books',
+								params: { 'authenticity_token': token },
+                waitMsg: 'Uploading your book...',
+                success: function(fp, action) {
+									console.log("o", action.result.book);
+                }
+            });
+        }
+    };
+
+		that.reset = function() { 
+				this.up('form').getForm().reset(); 
+		};
+		
+		that.panel = {
+        //width: 500,
+        frame: true,
+        //title: 'File Upload Form',
+        bodyPadding: '10 10 0',
+
+        defaults: { anchor: '100%', allowBlank: false, msgTarget: 'side', labelWidth: 50,	xtype: 'textfield'},
+
+        items: [
+					{fieldLabel: 'Title', name: 'book[title]', id: 'title'},
+					{xtype: 'filefield', emptyText: 'Select an book', fieldLabel: 'Book', name: 'book[file]', buttonText: 'choose'}
+				],
+
+        buttons: [
+					{text: 'Salvar', handler: that.upload},
+					{text: 'Limpar Campos', handler: that.reset}
+				]
+    };
+		
+		return {
+			init: function() {
+				token = Ext.select("meta[name='csrf-token']").first().getAttribute('content');
+				var formPanel = Ext.create('Ext.form.Panel', that.panel);//.render('add_books');
+				
+				Ext.create('Ext.window.Window', {
+				    title: 'Inserir imagem no atendimento',
+				    height: 200,
+				    width: 600,
+				    layout: 'fit',
+				    items: formPanel
+				}).show();
+				
+			}
+		}
+	}();
+
+	Ext.onReady(function(){
+		Cordel.init();
+	});
+</script>
