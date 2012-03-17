@@ -1,0 +1,10 @@
+<div id="sidebar">
+  <h2>Insert your books</h2>
+  <p><a href="#new" class="button">Add book</a></p>
+</div>
+
+<ul id="books">
+<% @books.each{|book|  %>
+	<li><%= link_to image_tag(book.thumb_image_path, :border => 0, :title => book.title, :alt => book.title), book %></li>
+<% } %>
+</ul>
