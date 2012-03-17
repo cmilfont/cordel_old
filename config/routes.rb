@@ -12,6 +12,7 @@ Cordel::Application.routes.draw do
   end
 
   resources :books
+  resources :authors
   
   root :to => "home#index"
   

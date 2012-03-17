@@ -2,16 +2,58 @@
 <html>
 <head>
   <title>Cordel</title>
-  <%= stylesheet_link_tag    "application" %>
+  
 
 	<link href="http://cdn.sencha.io/ext-4.0.7-gpl/resources/css/ext-all-gray.css" media="screen" rel="stylesheet" type="text/css">
+	<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.0.7-gpl/ext-all.js"></script>
 
+	<%= stylesheet_link_tag    "application" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
+
+	<script>
+	var current_user = <%= @user.to_json.html_safe %>;
+	</script>
+	
 </head>
 <body>
 
-<%= yield %>
+	<div class="miolo">
 
+	<div id="top">
+	  <div id="logo">
+		  <%= link_to image_tag("logo.gif"), "/" %>
+	  </div>
+	  <% if current_user %>
+	  <div id="user">
+	    <a href="/users/<%= current_user.id %>/edit"><img src="<%= gravatar_url_for current_user.email %>" style="width: 14px; height: 14px" /> <%= current_user.email %></a>
+	    &nbsp;
+			<%= link_to "Sign out", sign_out_path %>
+	  </div>
+	  <% else %>
+	  <div id="login">
+			<%= link_to "Sign in", sign_in_path %>
+			<%= link_to "Sign up", sign_up_path %>
+	  </div>
+	  <% end %>
+	  <ul id="menu">
+	    <li><a href="/"<%= "class='active'" if controller.controller_name == 'index' %>>Home</a></li>
+	    <li><a href="/books"<%= "class='active'" if controller.controller_name == 'books' %>>Books</a></li>
+	    <% if current_user %>
+	      <li><a href="/users/<%= current_user.id %>/edit"<%= "class='active'" if controller.controller_name == 'users' %>>Profile</a></li>
+	    <% end %>
+	  </ul>
+	  <div style="clear: both"></div>
+	</div>
+	<div id="content">
+	  <%= yield %>
+	  <div style="clear: both"></div>
+	</div>
+	<div id="bottom">
+	  <b>Cordel</b> is a personal virtual library<br />
+	  <span class="white">"Open your mind and go away"</span>
+	</div>
+
+	</div>
 </body>
 </html>

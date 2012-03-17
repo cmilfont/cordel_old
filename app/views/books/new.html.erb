@@ -2,6 +2,9 @@
 <script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.0.7-gpl/ext-all.js"></script>
 
 <script>
+
+var current_user = <%= @user.to_json.html_safe %>;
+
 /*
 
 var DJR = function() {
@@ -85,21 +88,74 @@ notaFiscal.incluirProduto( produto );
 		};
 		
 		that.panel = {
-        //width: 500,
         frame: true,
-        //title: 'File Upload Form',
         bodyPadding: '10 10 0',
-
-        defaults: { anchor: '100%', allowBlank: false, msgTarget: 'side', labelWidth: 50,	xtype: 'textfield'},
-
+        defaults: {  allowBlank: false, msgTarget: 'side', labelWidth: 50,	xtype: 'textfield'},
         items: [
-					{fieldLabel: 'Title', name: 'book[title]', id: 'title'},
-					{xtype: 'filefield', emptyText: 'Select an book', fieldLabel: 'Book', name: 'book[file]', buttonText: 'choose'}
-				],
+					{xtype: 'hidden', name: 'book[user_id]', value: current_user.id},
+					{fieldLabel: 'Title', name: 'book[title]', anchor: '100%'},
+					{
+					    fieldLabel: 'Author',
+					    store: Ext.create('Ext.data.Store', {
+							    fields: ['id', 'name'],
+									proxy: {
+						        type: 'ajax', url : '/authors.json',
+						        reader: {
+						            type: 'json', root: 'authors'
+						        }
+									}
+							}),
+							listeners: {
+								validitychange: function( field, isValid, eOpts ){
+									fil = field;
+									console.log("validitychange", field, isValid, eOpts);
+									
+								}
+							},
+							name: 'book[author_id]',
+							typeAhead:false, 
+							forceSelection:true,
+					    queryMode: 'remote',
+					    displayField: 'name',
+					    valueField: 'id',
+					    xtype: 'combo'
+					},
 
+					{
+	            xtype: 'container',
+	            anchor: '100%',
+	            layout:'column',
+	            items:[{
+	                xtype: 'container',
+	                columnWidth:.5,
+	                layout: 'anchor',
+								  defaults: {labelWidth: 50,	xtype: 'textfield'},
+	                items: [{anchor: '95%',fieldLabel: 'Publisher', name: 'book[publisher]', allowBlank: true,	xtype: 'textfield'}]
+	            },{
+	                xtype: 'container',
+	                columnWidth:.3,
+	                layout: 'anchor',
+  								defaults: {labelWidth: 50,	xtype: 'textfield'},
+	                items: [{anchor: '90%',fieldLabel: 'Edition', name: 'book[edition]', allowBlank: true,	xtype: 'textfield'}]
+	            },{
+	                xtype: 'container',
+	                columnWidth:.1,
+	                layout: 'anchor',
+									defaults: {labelWidth: 30,	xtype: 'textfield'},
+	                items: [
+										{ xtype: 'datefield', fieldLabel: 'Year', name: 'book[year]', allowBlank: true, hideTrigger: true, width: 100, format: 'Y'}
+									]
+	            }]
+	        },
+			
+//			author
+					
+					
+					{xtype: 'filefield', emptyText: 'Select an book', fieldLabel: 'Book', name: 'book[file]', buttonText: 'choose', anchor: '100%'}
+				],
         buttons: [
-					{text: 'Salvar', handler: that.upload},
-					{text: 'Limpar Campos', handler: that.reset}
+					{text: 'Save', handler: that.upload},
+					{text: 'Reset', handler: that.reset}
 				]
     };
 		
@@ -109,9 +165,8 @@ notaFiscal.incluirProduto( produto );
 				var formPanel = Ext.create('Ext.form.Panel', that.panel);//.render('add_books');
 				
 				Ext.create('Ext.window.Window', {
-				    title: 'Inserir imagem no atendimento',
-				    height: 200,
-				    width: 600,
+				    title: 'Add book to your library',
+				    width: 540,
 				    layout: 'fit',
 				    items: formPanel
 				}).show();
