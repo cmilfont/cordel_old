@@ -17,3 +17,6 @@ log/*
 coverage/*
 
 solr/*
+
+resque.pid
+public/system/files/*
