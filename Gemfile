@@ -11,6 +11,7 @@ gem "resque"
 gem 'uuid'
 gem "rmagick", :require => 'RMagick'
 gem "quick_magick"
+gem 'sunspot_solr'
 
 gem 'pdf-reader', :require => 'pdf/reader'
 
@@ -27,14 +28,4 @@ gem 'jquery-rails'
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
-group :test, :development do
-  gem 'sunspot_solr'
-	gem 'rspec-rails',      '2.8.1'
-	gem 'shoulda',          '3.0.0'
-	gem 'factory_girl',     '2.6.0'
-  gem 'database_cleaner', '0.7.1'
-	gem 'simplecov'
-	
-	gem 'ruby-debug19', :require => 'ruby-debug'
-	
-end
+#	gem 'ruby-debug19', :require => 'ruby-debug'
