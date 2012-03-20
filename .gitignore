@@ -20,3 +20,4 @@ solr/*
 
 resque.pid
 public/system/files/*
+public/images/covers/*
