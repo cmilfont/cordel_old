@@ -7,7 +7,7 @@ class Book < ActiveRecord::Base
   
   belongs_to :author
   accepts_nested_attributes_for :author
-  #validates_presence_of :author
+  validates_presence_of :author
 
   has_many :pages, :dependent => :destroy  
   
@@ -16,15 +16,16 @@ class Book < ActiveRecord::Base
   validates_attachment_size :file, :less_than => 15.megabytes
   validates_attachment_content_type :file, :content_type => ['application/pdf']
   
+  attr_accessor :author_highlighted, :pages_content_highlighted, :title_highlighted, :publisher_highlighted
   searchable do
-    text :author do
+    text :author, :stored => true do
       author.try(:name)
     end
-    text :title
+    text :title, :stored => true
     text :edition
-    text :publisher
+    text :publisher, :stored => true
     text :year
-    text :pages_content do
+    text :pages_content, :stored => true do
       pages.map do |page|
         page.content
       end

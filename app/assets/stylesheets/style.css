@@ -180,6 +180,11 @@ ul#books li a img {
   width: 280px;
   font-size: 12px;
 }
+
+#sidebar p {
+margin-bottom: 100px;
+}
+
 #sidebar img {
   max-width: 200px;
   _width: 200px;

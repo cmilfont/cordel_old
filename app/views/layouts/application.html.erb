@@ -5,11 +5,10 @@
   
 
 	<link href="http://cdn.sencha.io/ext-4.0.7-gpl/resources/css/ext-all-gray.css" media="screen" rel="stylesheet" type="text/css">
-	<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.0.7-gpl/ext-all.js"></script>
-
+	
 	<%= stylesheet_link_tag    "application" %>
-  <%= javascript_include_tag "application" %>
-  <%= csrf_meta_tags %>
+    <%= javascript_include_tag "application" %>
+    <%= csrf_meta_tags %>
 
 	<script>
 	var current_user = <%= @user.to_json.html_safe %>;
@@ -38,7 +37,7 @@
 	  <% end %>
 	  <ul id="menu">
 	    <li><a href="/"<%= "class='active'" if controller.controller_name == 'index' %>>Home</a></li>
-	    <li><a href="/books"<%= "class='active'" if controller.controller_name == 'books' %>>Books</a></li>
+	    <li><a href="/books"<%= "class='active'" if controller.controller_name == 'books' %>>My Books</a></li>
 	    <% if current_user %>
 	      <li><a href="/users/<%= current_user.id %>/edit"<%= "class='active'" if controller.controller_name == 'users' %>>Profile</a></li>
 	    <% end %>

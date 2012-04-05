@@ -1,6 +1,9 @@
 <div id="sidebar">
   <h2>Insert your books</h2>
   <p><a href="#new" class="button">Add book</a></p>
+  
+  <h2>Search your books</h2>
+  <p><a href="#search" class="button">Search Book</a></p>
 </div>
 
 <ul id="books">
@@ -8,3 +11,7 @@
 	<li><%= link_to image_tag(book.thumb_image_path, :border => 0, :title => book.title, :alt => book.title), book %></li>
 <% } %>
 </ul>
+
+<div id="pagination"></div>
+
+<%= javascript_include_tag "books/books" %>

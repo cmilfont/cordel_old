@@ -9,6 +9,41 @@ class BooksController < ApplicationController
     else
       @books = Book.all
     end
+    
+  end
+  
+  def search
+    
+    query    = params[:query]    || ""
+    page     = params[:page]     || 1
+    per_page = params[:per_page] || 10
+    
+    busca = Book.search do
+      fulltext query do
+        highlight :pages_content, :author, :title, :publisher, :fragment_size => 0
+      end
+      paginate :page => page, :per_page => per_page
+    end
+    
+    
+
+    busca.each_hit_with_result do |hit, result|
+
+      result.author_highlighted        = hit.highlight(:author).format { |word| "<span class='highlight'>#{word}</span>" } rescue ""
+
+      result.title_highlighted         = hit.highlight(:title).format { |word| "<span class='highlight'>#{word}</span>" } rescue ""
+      result.publisher_highlighted     = hit.highlight(:publisher).format { |word| "<span class='highlight'>#{word}</span>" } rescue ""
+      
+      hit.highlights(:pages_content).each{|high|
+        result.pages_content_highlighted = high.format { |word| "<span class='highlight'>#{word}</span>" } rescue ""
+      }
+      
+    end
+
+    @books = busca.results
+    
+    respond_with @books, :methods => [:author_highlighted, :pages_content_highlighted, :title_highlighted, :publisher_highlighted],
+                         :include => [:author]
   end
   
   def new
@@ -18,6 +53,7 @@ class BooksController < ApplicationController
   def show
     @user = current_user
     @book = Book.find(params[:id])
+    respond_with @book, :include => :author
   end
 
   def create
@@ -28,6 +64,13 @@ class BooksController < ApplicationController
       :success => "ok",
       :book => @book.to_json(:methods => :thumb_image_path)
     }.to_json
+  end
+  
+  def update
+    @book = Book.find params[:id]
+    params[:book].delete :id
+    @book.update_attributes(params[:book])    
+    respond_with @book
   end
   
   def destroy

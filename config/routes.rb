@@ -11,7 +11,12 @@ Cordel::Application.routes.draw do
     get '/users/auth/facebook/callback' => 'users/omniauth_callbacks#passthru'
   end
 
-  resources :books
+  resources :books do
+    collection do
+      get :search
+    end
+  end
+  
   resources :authors
   
   root :to => "home#index"
