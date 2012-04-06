@@ -1,72 +1,15 @@
 html {
-  background: #86AFAF url('/assets/bg.gif') no-repeat center top;
+  background: #859A89 url('/assets/noise.png');
 }
 body {
-  margin: 0 auto;
+  margin: 0;
   font-family: "Trebuchet MS", Arial, sans-serif;
-}
-
-img {
-  border: none;
-}
-ul {
-  padding: 0;
-  padding-left: 15px;
-}
-ul li {
-  margin-bottom: 10px;
-}
-ul.listing {
-  margin: 0;
-  padding: 0;
-}
-ul.listing li {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-ol {
-  margin: 0;
-  padding: 0;
-}
-ol li {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-fieldset {
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-
-form label {
-  display: block;
-  text-transform: uppercase;
-}
-form select {
-  padding: 5px 10px;
-  height: 30px;
-  font-weight: bold;
-  line-height: 30px;
-  background: #FFF;
-  border: 1px solid #C6C6C6;
-  -moz-border-radius: 6px;
-}
-form input[type='text'] {
-  padding: 5px 10px;
-  height: 18px;
-  font-weight: bold;
-  line-height: 18px;
-  background: #FFF;
-  border: 1px solid #C6C6C6;
-  -moz-border-radius: 6px;
 }
 
 #top {
   position: relative;
-  padding: 10px 0 3px 0;
-  color: #2F2428;
+  padding: 0 0 3px 0;
+  color: #536857;
 }
 
 #logo {
@@ -76,34 +19,54 @@ form input[type='text'] {
   letter-spacing: -2px;
 }
 
+#user {
+	background: #352D25 url(/assets/noise.png);
+    box-shadow: 2px 2px 2px #2C4F4F;
+    -moz-box-shadow: 2px 2px 2px #2C4F4F;
+    -webkit-box-shadow: 2px 2px 2px #2C4F4F;
+	padding: 5px;
+}
+
 #user,
 #login {
   position: absolute;
   right: 0;
 }
 #user a, #login a {
-  padding: 3px 8px;
+  /*padding: 3px 8px;*/
   font-size: 11px;
   text-decoration: none;
   text-transform: uppercase;
-  color: #FFF;
-  background: #2F2428;
+  color: #CEAE91;
+/*  background: #2F2428;*/
+/*
   box-shadow: 2px 2px 2px #2C4F4F;
   -moz-box-shadow: 2px 2px 2px #2C4F4F;
-  -webkit-box-shadow: 2px 2px 2px #2C4F4F;
+  -webkit-box-shadow: 2px 2px 2px #2C4F4F;*/
+
 }
+
+.user_picture, .user_infos {
+	float:left;
+}
+
+.user_infos {
+	margin-left:5px;
+}
+
 #user a:hover {
-  color: #F00;
+/*  color: #F00;*/
+  color: #9B7B2F;
 }
 #user img {
-  margin-bottom: -4px;
-  margin-left: -6px;
+  vertical-align: top;
   border: 1px solid #FFF;
 }
 #login img {
   height: 20px;
   border: 1px solid #FFF;
 }
+
 
 ul#menu {
   float: left;
@@ -122,7 +85,9 @@ ul#menu li a {
   font-weight: bold;
   text-transform: uppercase;
   text-decoration: none;
-  color: #2F2428;
+  color: #536857;
+/*  color: #2F2428;*/
+  text-shadow: 0 1px 1px #90B497; 
   letter-spacing: 3px;
 }
 ul#menu li a:hover,
@@ -155,6 +120,7 @@ ul#menu li a.active {
   font-size: 14px;
 }
 
+
 ul#books {
   margin: 0;
   padding: 0;
@@ -172,6 +138,7 @@ ul#books li a img {
   -moz-box-shadow: 2px 0 10px #222;
   -webkit-box-shadow: 2px 0 10px #222;
 }
+
 
 #sidebar {
   float: right;
@@ -199,37 +166,52 @@ margin-bottom: 100px;
   line-height: 19px;
 }
 
-.white { color: #FFF; }
-a.button {
-  padding: 3px 10px;
-  font-size: 11px;
-  font-weight: normal;
-  text-decoration: none;
-  text-transform: uppercase;
-  color: #FFF;
-  background: #2F2428;
-}
-a.button:hover {
-  color: #F00;
-}
-
-
-.css1 { font-size: 1.0em; }
-.css2 { font-size: 1.2em; }
-.css3 { font-size: 1.4em; }
-.css4 { font-size: 1.6em; }
-
 .miolo {
-	margin: 10px;
+	margin-top:0;
+	margin: 5px;
 }
 
 .x-window-header, .x-window-default, .x-toolbar-footer, .x-window-body-default {
-  background: #86AFAF;
-  border-color: #86AFAF;
-	
+  background: #859A89;
+  border-color: #859A89;
 }
  
 .x-window-header-text {
   font: bold 14px Consolas, Arial, san-serif;
-  color: #eee;
+  color: #fff;
+}
+
+.shelf, .shelfInter {
+/*	background: url('/assets/wooden_shelf.png') no-repeat center top;*/
+	background: #352D25 url(/assets/noise.png);
+	border:0;
+}
+
+.shelfInter {
+	margin: 0;
+	height: 140px;
+	width: 600px;
+	border: 0;
+	padding: 5px;
+}
+
+.shelfBorderTop, .shelfBorderBottom {
+	height:15px;
+	color:red;
+	background: #42382E url(/assets/noise.png);
+	padding:0;
+	border-top: 1px solid #C1A388;
+	border-bottom: 1px solid black;
+}
+
+.shelfBorderTop {
+/*	background: #332B24 url(/assets/noise.png);*/
+border: 0;
+}
+
+.sheltoolbar {
+	/*background: url('/assets/wood_texture.png');*/
+	background: #352D25 url(/assets/noise.png);
+	color: white;
+	border:0;
 }

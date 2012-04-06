@@ -369,6 +369,142 @@ Ext.onReady(function(){
 	    }
 	});
 	
+	/**
+	* Shelves
+	*/
+	Cordel.shelfPanelTemplate = new Ext.XTemplate(
+		'<div class="shelfBorderBottom"></div>',
+		'<div id="{id}-body" class="{baseCls}-body<tpl if="bodyCls"> {bodyCls}</tpl>',
+            ' {baseCls}-body-{ui}<tpl if="uiCls">',
+                '<tpl for="uiCls"> {parent.baseCls}-body-{parent.ui}-{.}</tpl>',
+            '</tpl>"<tpl if="bodyStyle"> style="{bodyStyle}"</tpl>>',
+        '</div>'
+	);
+	
+	Ext.define('Cordel.ShelfInternalPanel', {
+		extend: 'Ext.panel.Panel',
+		alias: ['widget.shelfinternalpanel'],
+		initComponent: function() {
+			this.renderTpl = Cordel.shelfPanelTemplate;
+			Ext.applyIf(this, { bodyCls: 'shelfInter', layout: 'hbox'});
+			this.callParent(arguments);
+		}
+	});
+	
+	Ext.define('Cordel.ShelfPanel', {
+		extend: 'Ext.panel.Panel',
+		alias: ['widget.shelfpanel'],
+		initComponent: function() {
+			
+			Ext.applyIf(this, {
+			    width: 580,	
+				height: 460,
+			    layout: 'vbox',	
+				bodyCls: 'shelf'
+				, dockedItems: [{
+				    xtype: 'pagingtoolbar',  dock: 'bottom', baseCls: 'sheltoolbar',
+					layout : {	align: 'middle', type : 'hbox',	pack : 'center'	},
+					renderTpl : Cordel.shelfPanelTemplate
+				}],
+				items: [
+					{
+						xtype: 'shelfinternalpanel',
+						items:[
+							{
+								width: 82, height: 120, layout: 'fit',
+								style: "margin-right: 15px;",
+								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
+							},
+							{
+								width: 82, height: 120, 
+								style: "margin-right: 15px;",
+								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
+							},
+							{
+								width: 82, height: 120, 
+								style: "margin-right: 15px;",
+								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
+							},
+							{
+								width: 82, height: 120, 
+								style: "margin-right: 15px;",
+								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
+							},
+							{
+								width: 82, height: 120, 
+								style: "margin-right: 15px;",
+								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
+							},
+							{
+								width: 82, height: 120, 
+								style: "margin-right: 15px;",
+								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
+							}
+						]
+					},
+					{
+						xtype: 'shelfinternalpanel',
+						items:[
+							{
+								width: 82, height: 120, layout: 'fit', 
+								style: "margin-right: 15px;",
+								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
+							},
+							{
+								width: 82, height: 120,  layout: 'fit',
+								style: "margin-right: 15px;",
+								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
+							}
+						]
+					},
+					{
+						xtype: 'shelfinternalpanel',
+						items:[
+						{
+							width: 82, height: 120,  layout: 'fit',
+							style: "margin-right: 15px;",
+							html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
+						}
+						
+						]
+					}
+					
+				]
+			});
+			this.callParent(arguments);
+		}
+	});
+	
+	Ext.define('Cordel.ShelfWindow', {
+		extend: 'Ext.window.Window',
+		initComponent: function() {
+			Ext.applyIf(this, {
+			    title: 'Shelf: ' + this.name,
+				frame: true,
+				border: "0 0 0 0",	padding: "0 0 0 0",
+				bodyBorder: false,
+				bodyStyle: { 'background': '#859A89', "border-color": '#CEAE91' },
+			    layout: 'fit'
+				, items:  [{xtype: 'shelfpanel'}]
+			});
+			this.resizable = false;
+	        this.callParent();
+	    }
+	});
+	
+	Ext.create(Cordel.ShelfWindow, {
+		name: 'Test Software',
+		books: [
+			{id: 1, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
+			{id: 2, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
+			{id: 3, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
+			{id: 4, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
+			{id: 5, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
+			{id: 6, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
+			{id: 7, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	}
+		]
+	}).show();
+	
 	
 	
 });

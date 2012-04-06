@@ -2,9 +2,8 @@
 <html>
 <head>
   <title>Cordel</title>
-  
-
-	<link href="http://cdn.sencha.io/ext-4.0.7-gpl/resources/css/ext-all-gray.css" media="screen" rel="stylesheet" type="text/css">
+	
+	<%= stylesheet_link_tag    "resources/css/ext-all-gray.css" %>
 	
 	<%= stylesheet_link_tag    "application" %>
     <%= javascript_include_tag "application" %>
@@ -25,9 +24,14 @@
 	  </div>
 	  <% if current_user %>
 	  <div id="user">
-	    <a href="/users/<%= current_user.id %>/edit"><img src="<%= gravatar_url_for current_user.email %>" style="width: 14px; height: 14px" /> <%= current_user.email %></a>
-	    &nbsp;
+		  <div class="user_picture">
+	  		<a href="/users/<%= current_user.id %>/edit"><img src="<%= gravatar_url_for current_user.email %>" style="width: 64px; height: 64px" /> </a>
+		  </div>
+		  <div class="user_infos">
+	    	<a href="/users/<%= current_user.id %>/edit"><%= current_user.email %></a>
+			<br/>
 			<%= link_to "Sign out", sign_out_path %>
+		  </div>
 	  </div>
 	  <% else %>
 	  <div id="login">
