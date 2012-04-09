@@ -19,7 +19,7 @@ body {
   letter-spacing: -2px;
 }
 
-#user {
+#user, #login {
 	background: #352D25 url(/assets/noise.png);
     box-shadow: 2px 2px 2px #2C4F4F;
     -moz-box-shadow: 2px 2px 2px #2C4F4F;
@@ -33,17 +33,10 @@ body {
   right: 0;
 }
 #user a, #login a {
-  /*padding: 3px 8px;*/
   font-size: 11px;
   text-decoration: none;
   text-transform: uppercase;
   color: #CEAE91;
-/*  background: #2F2428;*/
-/*
-  box-shadow: 2px 2px 2px #2C4F4F;
-  -moz-box-shadow: 2px 2px 2px #2C4F4F;
-  -webkit-box-shadow: 2px 2px 2px #2C4F4F;*/
-
 }
 
 .user_picture, .user_infos {
@@ -54,8 +47,7 @@ body {
 	margin-left:5px;
 }
 
-#user a:hover {
-/*  color: #F00;*/
+#user a:hover, #login a:hover {
   color: #9B7B2F;
 }
 #user img {

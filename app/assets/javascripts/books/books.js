@@ -2,6 +2,7 @@ Ext.onReady(function(){
 	
 	Ext.ns('Cordel');
 	
+	/* Panels */
 	Ext.define('Cordel.EditBookFormPanel', {
 		alias: ['widget.editbookformpanel'],
 		extend: 'Ext.form.Panel',
@@ -204,6 +205,20 @@ Ext.onReady(function(){
 		}
 	});
 	
+	Cordel.addAuthor = function(link, id, name){
+		var formPanel = Ext.getCmp(id);	
+		var author = Ext.create('Author', {name:name});
+		author.save({
+			callback: function() {
+				var store = Ext.data.StoreManager.lookup('authorStore');
+				store.loadData(author);
+				formPanel.down("combo").select(author);
+				$(link).remove();
+			}
+		});
+		return false;
+	}
+	
 	
 	Ext.define('Cordel.BookFormPanel', {
 		alias: ['widget.bookformpanel'],
@@ -214,34 +229,29 @@ Ext.onReady(function(){
 				var formPanel = this.up('form');
 		        var form = formPanel.getForm();
 		        if(form.isValid()){
-/*
-					var author_id = formPanel.getForm().findField("book[author_id]");
-					var author_name = formPanel.getForm().findField("book[author][name]");
-					
-					if(author_name.getValue().trim().length > 0) {
-						author_id.setValue("");
-					}*/
-
-									
-					//console.log(form.getValues() );
-					
 		            form.submit({
 		                url: '/books',
 						params: { 'authenticity_token': formPanel.token },
 		                waitMsg: 'Uploading your book...',
 		                success: function(fp, action) {
 		            
+					
+							console.log(action);
+							
 							var template = [
 								'<li>',
 								'	<a href="/books/{id}">',
-								'	<img alt="{title}" border="0" src="/assets/cover_thumb.png" title="{title}">',
+								'		<img alt="{title}" border="0" src="/assets/cover_thumb.png" title="{title}">',
 								'	</a>',
 								'</li>'
 							];
 		            
 							new Ext.XTemplate(template).append('books', action.result.book);
 							formPanel.up('window').destroy();
-		                }
+		                },
+						failure: function(form, action){
+							Ext.Msg.alert("Errors", "Tratar errors");
+						}
 		            });
 		            
 		        }
@@ -264,40 +274,50 @@ Ext.onReady(function(){
 		        defaults: {  allowBlank: false, msgTarget: 'side', labelWidth: 50,	xtype: 'textfield'},
 		        items: [
 					{xtype: 'hidden', name: 'book[user_id]', value: current_user.id},
-						//{xtype: 'hidden', name: 'book[author][name]', value: ''},
 					{fieldLabel: 'Title', name: 'book[title]', anchor: '100%'},
 					{
-					    fieldLabel: 'Author',
-					    store: Ext.create('Ext.data.Store', {
-/*
-							listeners: {
-								load: function(store, records, successful, operation, options) {
-									console.log(arguments);
-									if(records.length == 0) {
-										var author = formPanel.getForm().findField("book[author_id]");
-										var value = author.getValue();
-										formPanel.getForm().findField("book[author][name]").setValue(value);
+				        xtype: 'fieldcontainer',
+				        fieldLabel: 'Author',
+				       // labelWidth: 100,
+				        layout: 'hbox',
+				        items: [					{
+						    store: Ext.create('Ext.data.Store', {
+								listeners: {
+									load: function(store, records, successful, operation, options) {
+										if(records.length == 0) {											
+											var author = formPanel.getForm().findField("book[author_id]");
+											var value = author.getValue();
+											var author_name = formPanel.down("#author_name");
+											author_name.update("<a style='line-height: 22px;' href='#add_author' onclick='Cordel.addAuthor(this, \""+formPanel.id+"\", \""+value+"\")'> you want to add \"" + value + "\" as author?</a>");
+										}
 									}
+								},
+								storeId: 'authorStore',
+							    fields: ['id', 'name'],
+								proxy: {
+						        	type: 'ajax', url : '/authors.json',
+						        	reader: {
+						            	type: 'json', root: 'authors'
+						        	}
 								}
-							},*/
-
-						    fields: ['id', 'name'],
-							proxy: {
-					        	type: 'ajax', url : '/authors.json',
-					        	reader: {
-					            	type: 'json', root: 'authors'
-					        	}
-							}
-						}),
-						name: 'book[author_id]',
-						typeAhead:true, 
-						forceSelection:false,
-						allowBlank: true,
-					    queryMode: 'remote',
-					    displayField: 'name',
-					    valueField: 'id',
-					    xtype: 'combo'
-					},
+							}),
+							name: 'book[author_id]',
+							typeAhead:true, 
+							forceSelection:false,
+							allowBlank: true,
+						    queryMode: 'remote',
+						    displayField: 'name',
+						    valueField: 'id',
+						    xtype: 'combo'
+						}, {
+				            xtype: 'splitter'
+				        },{
+							xtype: 'container',
+				            itemId: 'author_name',
+				            flex: 1
+				        }
+				        ]
+				    },
 					{
 			            xtype: 'container',
 			            anchor: '100%',
@@ -368,148 +388,8 @@ Ext.onReady(function(){
 	        this.callParent();
 	    }
 	});
-	
-	/**
-	* Shelves
-	*/
-	Cordel.shelfPanelTemplate = new Ext.XTemplate(
-		'<div class="shelfBorderBottom"></div>',
-		'<div id="{id}-body" class="{baseCls}-body<tpl if="bodyCls"> {bodyCls}</tpl>',
-            ' {baseCls}-body-{ui}<tpl if="uiCls">',
-                '<tpl for="uiCls"> {parent.baseCls}-body-{parent.ui}-{.}</tpl>',
-            '</tpl>"<tpl if="bodyStyle"> style="{bodyStyle}"</tpl>>',
-        '</div>'
-	);
-	
-	Ext.define('Cordel.ShelfInternalPanel', {
-		extend: 'Ext.panel.Panel',
-		alias: ['widget.shelfinternalpanel'],
-		initComponent: function() {
-			this.renderTpl = Cordel.shelfPanelTemplate;
-			Ext.applyIf(this, { bodyCls: 'shelfInter', layout: 'hbox'});
-			this.callParent(arguments);
-		}
-	});
-	
-	Ext.define('Cordel.ShelfPanel', {
-		extend: 'Ext.panel.Panel',
-		alias: ['widget.shelfpanel'],
-		initComponent: function() {
-			
-			Ext.applyIf(this, {
-			    width: 580,	
-				height: 460,
-			    layout: 'vbox',	
-				bodyCls: 'shelf'
-				, dockedItems: [{
-				    xtype: 'pagingtoolbar',  dock: 'bottom', baseCls: 'sheltoolbar',
-					layout : {	align: 'middle', type : 'hbox',	pack : 'center'	},
-					renderTpl : Cordel.shelfPanelTemplate
-				}],
-				items: [
-					{
-						xtype: 'shelfinternalpanel',
-						items:[
-							{
-								width: 82, height: 120, layout: 'fit',
-								style: "margin-right: 15px;",
-								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
-							},
-							{
-								width: 82, height: 120, 
-								style: "margin-right: 15px;",
-								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
-							},
-							{
-								width: 82, height: 120, 
-								style: "margin-right: 15px;",
-								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
-							},
-							{
-								width: 82, height: 120, 
-								style: "margin-right: 15px;",
-								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
-							},
-							{
-								width: 82, height: 120, 
-								style: "margin-right: 15px;",
-								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
-							},
-							{
-								width: 82, height: 120, 
-								style: "margin-right: 15px;",
-								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
-							}
-						]
-					},
-					{
-						xtype: 'shelfinternalpanel',
-						items:[
-							{
-								width: 82, height: 120, layout: 'fit', 
-								style: "margin-right: 15px;",
-								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
-							},
-							{
-								width: 82, height: 120,  layout: 'fit',
-								style: "margin-right: 15px;",
-								html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
-							}
-						]
-					},
-					{
-						xtype: 'shelfinternalpanel',
-						items:[
-						{
-							width: 82, height: 120,  layout: 'fit',
-							style: "margin-right: 15px;",
-							html: "<img src='http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'/>",
-						}
-						
-						]
-					}
-					
-				]
-			});
-			this.callParent(arguments);
-		}
-	});
-	
-	Ext.define('Cordel.ShelfWindow', {
-		extend: 'Ext.window.Window',
-		initComponent: function() {
-			Ext.applyIf(this, {
-			    title: 'Shelf: ' + this.name,
-				frame: true,
-				border: "0 0 0 0",	padding: "0 0 0 0",
-				bodyBorder: false,
-				bodyStyle: { 'background': '#859A89', "border-color": '#CEAE91' },
-			    layout: 'fit'
-				, items:  [{xtype: 'shelfpanel'}]
-			});
-			this.resizable = false;
-	        this.callParent();
-	    }
-	});
-	
-	Ext.create(Cordel.ShelfWindow, {
-		name: 'Test Software',
-		books: [
-			{id: 1, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
-			{id: 2, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
-			{id: 3, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
-			{id: 4, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
-			{id: 5, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
-			{id: 6, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	},
-			{id: 7, url: 'http://localhost:3000/images/covers/cover_2af1dff0-5400-012f-5d0f-48bcc8899524_thumb.png'	}
-		]
-	}).show();
-	
-	
-	
+		
 });
-
-
 
 $(function(){
 	

@@ -25,7 +25,7 @@
 
 <p>
   <b>EDITION:</b>
-  <%=h @book.year %>
+  <%=h @book.edition %>
 </p>
 
 <p>
@@ -35,7 +35,11 @@
 
 <p>
   <b>PAGES:</b>
-  <%=h @book.pages.size %> in file <%= "<span style='color:red;'>waiting for the indexing process finishes!<span/>" if @book.pages.size == 0  %>
+  <% if @book.pages.size == 0 %>
+  	<span style='color:red;'>waiting for the indexing process finishes!<span/>
+  <% else %>
+  	<%=h @book.pages.size %> in this file.
+  <% end %>
 </p>
 
 <% if current_user && current_user.owner_of(@book) %>

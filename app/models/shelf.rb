@@ -1,6 +1,11 @@
 class Shelf < ActiveRecord::Base
-  belongs_to :user
+    
+  validates_presence_of :name
   
-  has_many :books
+  belongs_to :user
+  validates_presence_of :user
+  
+  has_many :shelved_books
+  has_many :books, :through => :shelved_books
   
 end

@@ -53,17 +53,24 @@ class BooksController < ApplicationController
   def show
     @user = current_user
     @book = Book.find(params[:id])
-    respond_with @book, :include => :author
+    respond_with @book, :include => :author, :methods => [:thumb_image_path]
   end
 
   def create
     @book = Book.new(params[:book])
     @book.save
-    Book.deliver(@book.id)
-    render :text => {
-      :success => "ok",
-      :book => @book.to_json(:methods => :thumb_image_path)
-    }.to_json
+    if @book.valid?
+      Book.deliver(@book.id)
+      render :text => {
+        :success => true,
+        :book => @book.to_json(:methods => :thumb_image_path)
+      }.to_json
+    else
+      render :text => {
+        :success => false,
+        :errors => @book.errors
+      }.to_json
+    end
   end
   
   def update

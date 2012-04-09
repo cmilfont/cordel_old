@@ -1,5 +1,8 @@
 Ext.onReady(function(){
 	
+	Ext.Ajax.extraParams = {
+		authenticity_token : Ext.select("meta[name='csrf-token']").first().getAttribute('content')
+	}
 	
 	Ext.override(Ext.form.field.Picker, {
 		

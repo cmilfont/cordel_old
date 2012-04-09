@@ -17,6 +17,8 @@ Cordel::Application.routes.draw do
     end
   end
   
+  resources :shelves
+  
   resources :authors
   
   root :to => "home#index"

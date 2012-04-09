@@ -18,4 +18,9 @@ class AuthorsController < ApplicationController
     respond_with @author
   end
   
+  def create
+    @author = Author.create(params[:author])
+    respond_with @author
+  end
+  
 end

@@ -8,3 +8,4 @@
 //= require jquery_ujs
 //= require ext-all
 //= require base
+//= require model
