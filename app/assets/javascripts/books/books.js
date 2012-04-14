@@ -130,19 +130,14 @@ Ext.onReady(function(){
 	Ext.define('Cordel.ViewSearchBookWindow', {
 		extend: 'Ext.window.Window',
 		initComponent: function() {
-			
+	
 			Ext.applyIf(this, {
 			    title: 'View Book',
 			    width: 600,
 			    layout: 'fit',
 				items: Ext.create('Ext.view.View', {
 					id: 'books-view',
-		            store: Ext.create('Ext.data.Store', {
-					    fields: Cordel.fieldsSearchBook,
-						data: [this.data.raw],
-						proxy: { type: 'memory', reader:{ type: 'json' } }
-					}),
-		            tpl: [
+					tpl: [
 						'<tpl for=".">',
 	                    	'<div class="thumb-wrap">',
 							'{title}',
@@ -150,25 +145,24 @@ Ext.onReady(function(){
 	                    	'<div class="x-editable">{text}</div></div>',
 						'</tpl>',
 		                '<div class="x-clear"></div>'
-		            ],
+					],
+					store: Ext.create('Ext.data.Store', {
+						fields: Cordel.fieldsSearchBook,
+						data: [ this.data.raw ],
+						proxy: { type: 'memory', reader: { type: 'json'} }
+					}),
 					autoScroll: true,
-		            multiSelect: true,
-		            height: 310,
-		            trackOver: true,
-		            overItemCls: 'x-item-over',
-		            itemSelector: 'div.thumb-wrap',
-		            emptyText: 'No book to display',
-		            prepareData: function(data) {
-		                return data;
-		            },
-		            listeners: {
-		                selectionchange: function(dv, nodes ){
-		                }
-		            }
-		        })
-				
+					multiSelect: true,
+					height: 400,
+					trackOver: true,
+					overItemCls: 'x-item-over',
+					itemSelector: 'div.thumb-wrap',
+					emptyText: 'No book to display',
+					prepareData: function(data) {
+						return data;
+					}
+				})
 			});
-			
 			this.callParent();
 		}
 	});
@@ -190,14 +184,14 @@ Ext.onReady(function(){
 		},
 		initComponent: function() {
 			Ext.applyIf(this, {
-
-			    viewConfig: {
-			        plugins: {
+				
+				viewConfig: {
+					plugins: {
 						ddGroup: 'ShelfBook',
-			            ptype: 'gridviewdragdrop',
-			            dragText: 'Drag and drop to reorganize'
-			        }
-			    },
+						ptype: 'gridviewdragdrop',
+						dragText: 'Drag and drop to reorganize'
+					}
+				},
 				
 				title: 'Books',
 				autoScroll: true,
