@@ -6,8 +6,10 @@ class BooksController < ApplicationController
     @user = current_user
     if(@user.present?)
       @books = Book.mybooks(current_user)
+      @shelves = Shelf.where(:user_id => @user.id)
     else
-      @books = Book.all
+      @books = []
+      @shelves = []
     end
     
   end
@@ -30,7 +32,6 @@ class BooksController < ApplicationController
     busca.each_hit_with_result do |hit, result|
 
       result.author_highlighted        = hit.highlight(:author).format { |word| "<span class='highlight'>#{word}</span>" } rescue ""
-
       result.title_highlighted         = hit.highlight(:title).format { |word| "<span class='highlight'>#{word}</span>" } rescue ""
       result.publisher_highlighted     = hit.highlight(:publisher).format { |word| "<span class='highlight'>#{word}</span>" } rescue ""
       
@@ -41,8 +42,7 @@ class BooksController < ApplicationController
     end
 
     @books = busca.results
-    
-    respond_with @books, :methods => [:author_highlighted, :pages_content_highlighted, :title_highlighted, :publisher_highlighted],
+    respond_with @books, :methods => [:author_highlighted, :pages_content_highlighted, :title_highlighted, :publisher_highlighted, :thumb_image_path],
                          :include => [:author]
   end
   

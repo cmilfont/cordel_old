@@ -108,6 +108,70 @@ Ext.onReady(function(){
 	    }
 	});
 	
+	Cordel.fieldsSearchBook = [
+		{name: 'id',  type: 'int'},
+		{name: 'title',  type: 'string'},
+		{name: 'thumb_image_path',  type: 'string'},
+		{name: 'user_id',  type: 'int'},
+		{name: 'author', mapping:'author.name'}, 
+		{name: 'text', convert:function(mixed, record){
+			var highlights = "";
+			if(record.data.title_highlighted && record.data.title_highlighted.trim().length > 0) 
+				highlights += record.data.title_highlighted;
+			if(record.data.author_highlighted && record.data.author_highlighted.trim().length > 0) 
+				highlights += record.data.author_highlighted;
+			if(record.data.pages_content_highlighted && record.data.pages_content_highlighted.trim().length > 0) 
+				highlights += record.data.pages_content_highlighted;
+			return highlights;
+		}},
+		'title_highlighted', 'author_highlighted', 'pages_content_highlighted'
+	];
+	
+	Ext.define('Cordel.ViewSearchBookWindow', {
+		extend: 'Ext.window.Window',
+		initComponent: function() {
+			
+			Ext.applyIf(this, {
+			    title: 'View Book',
+			    width: 600,
+			    layout: 'fit',
+				items: Ext.create('Ext.view.View', {
+					id: 'books-view',
+		            store: Ext.create('Ext.data.Store', {
+					    fields: Cordel.fieldsSearchBook,
+						data: [this.data.raw],
+						proxy: { type: 'memory', reader:{ type: 'json' } }
+					}),
+		            tpl: [
+						'<tpl for=".">',
+	                    	'<div class="thumb-wrap">',
+							'{title}',
+	                    	'<div class="thumb"><img src="{thumb_image_path}" title="{title}"></div>',
+	                    	'<div class="x-editable">{text}</div></div>',
+						'</tpl>',
+		                '<div class="x-clear"></div>'
+		            ],
+					autoScroll: true,
+		            multiSelect: true,
+		            height: 310,
+		            trackOver: true,
+		            overItemCls: 'x-item-over',
+		            itemSelector: 'div.thumb-wrap',
+		            emptyText: 'No book to display',
+		            prepareData: function(data) {
+		                return data;
+		            },
+		            listeners: {
+		                selectionchange: function(dv, nodes ){
+		                }
+		            }
+		        })
+				
+			});
+			
+			this.callParent();
+		}
+	});
 	
 	
 	//*******************************
@@ -126,35 +190,26 @@ Ext.onReady(function(){
 		},
 		initComponent: function() {
 			Ext.applyIf(this, {
+
+			    viewConfig: {
+			        plugins: {
+						ddGroup: 'ShelfBook',
+			            ptype: 'gridviewdragdrop',
+			            dragText: 'Drag and drop to reorganize'
+			        }
+			    },
+				
 				title: 'Books',
 				autoScroll: true,
 				height: 200,
 				listeners: {
 					itemdblclick: function(view, record) {
-						console.log(arguments);
-						
-						var win = Ext.create(Cordel.EditBookWindow);
-						win.down("editbookformpanel").getForm().loadRecord(record);
+						var win = Ext.create(Cordel.ViewSearchBookWindow, {data: record });
 						win.show();
-						
 					}
 				},
 			    store: Ext.create('Ext.data.Store', {
-				    fields:[
-						'title', 
-						{name:'author',mapping:'author.name'}, 
-						{name: 'text', convert:function(mixed, record){
-							var highlights = "";
-							if(record.data.title_highlighted && record.data.title_highlighted.trim().length > 0) 
-								highlights += record.data.title_highlighted;
-							if(record.data.author_highlighted && record.data.author_highlighted.trim().length > 0) 
-								highlights += record.data.author_highlighted;
-							if(record.data.pages_content_highlighted && record.data.pages_content_highlighted.trim().length > 0) 
-								highlights += record.data.pages_content_highlighted;
-							return highlights;
-						}},
-						'title_highlighted', 'author_highlighted', 'pages_content_highlighted'
-					],
+				    fields: Cordel.fieldsSearchBook,
 				    proxy: {
 						format: 'json', type  : 'rest', url: '/books/search', reader: { type: 'json' }
 				    }
@@ -236,7 +291,7 @@ Ext.onReady(function(){
 		                success: function(fp, action) {
 		            
 					
-							console.log(action);
+							console.log("action", action);
 							
 							var template = [
 								'<li>',
@@ -246,7 +301,7 @@ Ext.onReady(function(){
 								'</li>'
 							];
 		            
-							new Ext.XTemplate(template).append('books', action.result.book);
+							new Ext.XTemplate(template).append('books', JSON.parse(action.result.book));
 							formPanel.up('window').destroy();
 		                },
 						failure: function(form, action){
@@ -390,17 +445,3 @@ Ext.onReady(function(){
 	});
 		
 });
-
-$(function(){
-	
-	$("a[href='#new']").click(function(){
-		Ext.create('Cordel.NewBookWindow').show();
-		return false;
-	});
-	
-	$("a[href='#search']").click(function(){
-		Ext.create('Cordel.SearchBookWindow').show();
-		return false;
-	});
-	
-})

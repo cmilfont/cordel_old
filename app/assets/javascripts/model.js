@@ -33,6 +33,14 @@ Ext.onReady(function(){
 		belongsTo: 'User'
 	});
 	
+	Ext.define('ShelvedBook', {
+	    extend: 'Ext.data.Model',
+	    fields: [
+			{name: 'book_id',  type: 'int'},
+			{name: 'shelf_id',  type: 'int'}
+		]
+	});
+	
 	
 	Ext.define('Shelf', {
 	    extend: 'Ext.data.Model',

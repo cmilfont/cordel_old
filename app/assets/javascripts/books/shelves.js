@@ -2,9 +2,6 @@ Ext.onReady(function(){
 	
 	Ext.ns('Cordel');
 
-	/**
-	* Shelves
-	*/
 	Cordel.shelfPanelTemplate = new Ext.XTemplate(
 		'<div class="shelfBorderBottom"></div>',
 		'<div id="{id}-body" class="{baseCls}-body<tpl if="bodyCls"> {bodyCls}</tpl>',
@@ -19,7 +16,10 @@ Ext.onReady(function(){
 		alias: ['widget.shelfinternalpanel'],
 		initComponent: function() {
 			this.renderTpl = Cordel.shelfPanelTemplate;
-			Ext.applyIf(this, { bodyCls: 'shelfInter', layout: 'hbox'});
+			Ext.applyIf(this, {
+				bodyCls: 'shelfInter', 
+				layout: 'hbox'
+			});
 			this.callParent(arguments);
 		}
 	});
@@ -29,29 +29,62 @@ Ext.onReady(function(){
 		alias: ['widget.shelfpanel'],
 		createBookContainer: function(book) {
 			return {
-				width: 82, height: 120, layout: 'fit',	style: "margin-right: 15px;",
+				width: 82, 
+				height: 120, 
+				layout: 'fit',	
+				style: "margin-right: 15px;",
 				html: "<img src='" + book.data.thumb_image_path + "'/>"
 			};
+		},
+		changePage: function( paging, pageData, eOpts ) {
+
+			var panel = this,
+				shelfinternalpanel1 = panel.items.get(0),
+				shelfinternalpanel2 = panel.items.get(1),
+				shelfinternalpanel3 = panel.items.get(2),
+				pageData = paging.getPageData(),
+				fromRecord = pageData.fromRecord - 1,
+				store = paging.store;
+				
+			//console.log("changepage",  paging.store,  pageData);
+
+			shelfinternalpanel1.removeAll(true);
+			shelfinternalpanel2.removeAll(true);
+			shelfinternalpanel3.removeAll(true);
+
+			store.getRange(fromRecord, fromRecord + 6).forEach(function(book){
+				if(book) shelfinternalpanel1.add( panel.createBookContainer(book) );
+			});
+
+			fromRecord = fromRecord + 6;
+			if(fromRecord < pageData.toRecord) {
+				store.getRange(fromRecord, fromRecord + 6).forEach(function(book){
+					if(book) shelfinternalpanel2.add( panel.createBookContainer(book) );
+				});
+			}
+
+			fromRecord = fromRecord + 6;
+			if(fromRecord < pageData.toRecord) {
+				store.getRange(fromRecord, fromRecord + 6).forEach(function(book){
+					if(book) shelfinternalpanel3.add( panel.createBookContainer(book) );
+				});
+			}
+
+		},
+		setShelf: function(shelf) {
+			this.updateBooks( shelf.books() );
+			this.shelf = shelf;
 		},
 		updateBooks: function(books) {
 			
 			var panel = this;
-			var lista = books.data.items.map(function(book){ 
-				return book.raw;
-			}) ;
+			var lista = books.data.items.map(function(book){ return book.raw; });
 
 			var store = Ext.create('Ext.data.Store', {
+				pageSize: 18, 
 				model: 'Book',
-				data: {
-					books: lista
-				},
-				proxy: {
-					type: 'memory',
-					reader:{
-						type: 'json',
-						root: 'books'
-					}
-				}
+				data: { books: lista },
+				proxy: { type: 'memory', reader:{ type: 'json', root: 'books' }	}
 			});
 
 /*
@@ -68,10 +101,9 @@ Ext.onReady(function(){
 				renderTpl : Cordel.shelfPanelTemplate,
 				store: store,
 				listeners: {
-					change: function( paging, pageData, eOpts ){
-						paging.store.getRange(0, paging.store.getTotalCount() ).forEach(function(book){
-							panel.items.get(0).add( panel.createBookContainer(book) );
-						});						
+					change: {
+						fn: this.changePage, 
+						scope: this
 					}
 				}
 			}]);
@@ -81,13 +113,36 @@ Ext.onReady(function(){
 			Ext.applyIf(this, {
 			    width: 580,	
 				height: 460,
-			    layout: 'vbox',	
+			    layout: 'vbox',
+				draggable: true,
 				bodyCls: 'shelf'
 				, items: [
 					{xtype: 'shelfinternalpanel'},
 					{xtype: 'shelfinternalpanel'},
 					{xtype: 'shelfinternalpanel'}
 				]
+				, listeners: {
+					afterrender: function(panel) {
+						var panelDropTargetEl =  panel.body.dom;
+						Ext.create('Ext.dd.DropTarget', panelDropTargetEl, {
+					        ddGroup: 'ShelfBook',
+					        notifyDrop  : function(ddSource, e, data){
+					            var selectedRecord = ddSource.dragData.records[0],
+									docked = panel.getDockedComponent(0),
+									store = docked.store;
+								
+									console.log("shelf?", panel.shelf);
+								
+								store.proxy.data.books.push( selectedRecord.raw );
+								docked.doRefresh();
+					            ddSource.view.store.remove(selectedRecord);
+					            return true;
+					        }
+					    });
+						
+					}
+				}
+				
 			});
 			this.callParent(arguments);
 		}
@@ -100,8 +155,9 @@ Ext.onReady(function(){
 			if( this.shelf_id ) {
 				Shelf.load(this.shelf_id, {
 					callback: function(shelf) {
+						var shelfPanel = self.child('shelfpanel');
 						self.setTitle( 'Shelf: ' + shelf.get('name'));
-						self.child('shelfpanel').updateBooks( shelf.books() );
+						shelfPanel.setShelf(shelf);
 					}
 				});
 			}
@@ -123,7 +179,5 @@ Ext.onReady(function(){
 	        this.callParent();
 	    }
 	});
-	
-	//Ext.create(Cordel.ShelfWindow, { shelf_id: 1 }).show();
 
 });

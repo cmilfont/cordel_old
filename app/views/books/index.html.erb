@@ -4,6 +4,15 @@
   
   <h2>Search your books</h2>
   <p><a href="#search" class="button">Search Book</a></p>
+  
+  
+  <h2>My Shelves</h2> <a href="#create" class="button">Search Book</a>
+  <p>
+	  <% @shelves.each{|shelf| %>
+	  	<%= link_to shelf.name, "#/shelves/#{shelf.id}" %>
+	  <% } %>
+  </p>
+  
 </div>
 
 <ul id="books">
@@ -16,3 +25,4 @@
 
 <%= javascript_include_tag "books/shelves" %>
 <%= javascript_include_tag "books/books" %>
+<%= javascript_include_tag "books/index" %>
