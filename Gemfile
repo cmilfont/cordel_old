@@ -16,7 +16,6 @@ gem "quick_magick"
 gem 'sunspot_solr'
 
 gem 'pdf-reader', :require => 'pdf/reader'
-
 gem "pdf-toolkit", :require => 'pdf/toolkit'
 
 group :assets do
@@ -26,6 +25,15 @@ group :assets do
 end
 
 gem 'jquery-rails'
+
+group :test, :development do
+  gem 'sunspot_solr'
+	gem 'rspec-rails',      '2.8.1'
+	gem 'shoulda',          '3.0.0'
+	gem 'factory_girl',     '2.6.0'
+  gem 'database_cleaner', '0.7.1'
+	gem 'simplecov'
+end
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

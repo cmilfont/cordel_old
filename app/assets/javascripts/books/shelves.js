@@ -179,5 +179,49 @@ Ext.onReady(function(){
 	        this.callParent();
 	    }
 	});
+	
+	
+	Ext.define('Cordel.NewShelfWindow', {
+		extend: 'Ext.window.Window',
+		save: function(component) {
+			var win = this, 
+				form = win.down("form");
+			if( form.getForm().isValid() ) {
+				var shelf = Ext.create('Shelf', Ext.applyIf( form.getForm().getValues(), {user_id: current_user.id}) );
+				shelf.save({
+					callback: function(instance) {
+						if( instance.get("id") ) {
+							Ext.create(Cordel.ShelfWindow, { shelf_id: instance.get("id") }).show();
+							if(win.afterSave && typeof win.afterSave === "function") win.afterSave(instance); 
+							win.close();
+						} else {
+							console.log(shelf);
+						}
+					}
+				});
+			}
+		},
+		initComponent: function() {
+			Ext.applyIf(this, {
+			    title: 'New Shelf',
+				frame: true,
+				bodyBorder: false,
+			    layout: 'fit',
+				items:  [{
+					xtype: 'form'
+					, frame: true
+					, width: 300
+					, items: [{
+						fieldLabel: 'Name', name: 'name', anchor: '100%', msgTarget: 'side', labelWidth: 40, xtype: 'textfield',  allowBlank: false
+					}]
+				}],
+		        buttons: [
+					{text: 'Save', handler: this.save, scope: this}
+				]
+			});
+			this.resizable = false;
+	        this.callParent();
+	    }
+	});
 
 });

@@ -10,6 +10,16 @@ $(function(){
 		return false;
 	});
 	
+	$("a[href='#create']").click(function(){
+		Ext.create('Cordel.NewShelfWindow', {
+			afterSave: function(shelf) {
+				$("#list_of_shelves").append("<a href=\"#/shelves/" + shelf.get("id")  + "\"> " + shelf.get("name") + " </a>");
+			}
+		}).show();
+		return false;
+	});
+	
+	
 	$("a[href^='#/shelves/']").click(function(){
 		var id = $(this).attr("href").replace('#/shelves/', "");
 //		console.log( id.replace('#/shelves/', ""));

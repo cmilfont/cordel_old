@@ -50,7 +50,8 @@ Ext.onReady(function(){
 	        {name: 'user_id',  type: 'int'}
 	    ],
 	    validations: [
-	        {type: 'presence',  field: 'name'}
+	        {type: 'presence',  field: 'name'},
+			{type: 'presence',  field: 'user_id'}
 	    ]
 		, proxy: {
 	        type: 'rest', format: 'json', url : '/shelves'

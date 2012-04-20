@@ -158,6 +158,29 @@ margin-bottom: 30px;
   line-height: 19px;
 }
 
+#sidebar a {
+	text-decoration: none;
+	color: #754063;
+	/*color: #D95555;*/
+}
+
+#sidebar a:hover {
+	text-decoration: none;
+	color: #976C9B;
+}
+
+
+#list_of_shelves a {
+	/*color: #A64F03;*/
+	color: #685356;
+}
+
+#list_of_shelves a:hover {
+	color: #B46C77;
+	/*color: #D98E04;*/
+}
+
+
 .miolo {
 	margin-top:0;
 	margin: 5px;
