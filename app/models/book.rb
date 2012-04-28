@@ -36,6 +36,17 @@ class Book < ActiveRecord::Base
   @queue = :file_serve
   def process(book_id)
     book = Book.find(book_id)
+    
+    #url = Rails.root.to_s + "/public" + Book.find(66).file.url(:original, :timestamp => false)
+    url = Rails.root.to_s + "/public" + "/system/files/66/original/crafting-rails-applications_p1_0.pdf"
+    PDF::Reader.open(url) do |reader|
+      puts reader.info.inspect
+      
+      info = reader.info
+      puts "Title => " + info[:Title]
+      puts "Author => " + info[:Author]
+      
+    end
 
     url = Rails.root.to_s + "/public" + book.file.url(:original, :timestamp => false)
   	receiver = PageTextReceiver.new

@@ -16,10 +16,7 @@ Ext.onReady(function(){
 		alias: ['widget.shelfinternalpanel'],
 		initComponent: function() {
 			this.renderTpl = Cordel.shelfPanelTemplate;
-			Ext.applyIf(this, {
-				bodyCls: 'shelfInter', 
-				layout: 'hbox'
-			});
+			Ext.applyIf(this, {bodyCls: 'shelfInter', layout: 'hbox'});
 			this.callParent(arguments);
 		}
 	});
@@ -33,8 +30,25 @@ Ext.onReady(function(){
 				height: 120, 
 				layout: 'fit',	
 				style: "margin-right: 15px;",
-				html: "<img src='" + book.data.thumb_image_path + "'/>"
+				html: "<img src='" + book.data.thumb_image_path + "'/>",
+
+				multiSelect: true,
+				
+				draggable: {
+					//ddGroup: 'ShelfBook', 
+					delegate: 'img',
+					//dragData: {
+					//	records: [ Ext.create('Book', book.data ) ]
+					//}
+				}
+				
 			};
+		},
+		arrangeBookshelf: function(from, to, store, shelf, panel) {
+			var panel = this;
+			store.getRange(from, to).forEach(function(book){
+				if(book) shelf.add( panel.createBookContainer(book) );
+			});
 		},
 		changePage: function( paging, pageData, eOpts ) {
 
@@ -51,7 +65,20 @@ Ext.onReady(function(){
 			shelfinternalpanel1.removeAll(true);
 			shelfinternalpanel2.removeAll(true);
 			shelfinternalpanel3.removeAll(true);
+			
+			this.arrangeBookshelf(fromRecord, fromRecord + 6, store, shelfinternalpanel1);
+			
+			fromRecord = fromRecord + 6;
+			if(fromRecord < pageData.toRecord) {
+				this.arrangeBookshelf(fromRecord, fromRecord + 6, store, shelfinternalpanel2);
+			}
+			
+			fromRecord = fromRecord + 6;
+			if(fromRecord < pageData.toRecord) {
+				this.arrangeBookshelf(fromRecord, fromRecord + 6, store, shelfinternalpanel3);
+			}
 
+			/*
 			store.getRange(fromRecord, fromRecord + 6).forEach(function(book){
 				if(book) shelfinternalpanel1.add( panel.createBookContainer(book) );
 			});
@@ -68,7 +95,7 @@ Ext.onReady(function(){
 				store.getRange(fromRecord, fromRecord + 6).forEach(function(book){
 					if(book) shelfinternalpanel3.add( panel.createBookContainer(book) );
 				});
-			}
+			}*/
 
 		},
 		setShelf: function(shelf) {
@@ -96,10 +123,12 @@ Ext.onReady(function(){
 
 			this.addDocked([{
 			    xtype: 'pagingtoolbar', 
-				dock: 'bottom', baseCls: 'sheltoolbar',
+				dock: 'bottom', 
+				baseCls: 'sheltoolbar',
 				layout : {	align: 'middle', type : 'hbox',	pack : 'center'	},
 				renderTpl : Cordel.shelfPanelTemplate,
 				store: store,
+				
 				listeners: {
 					change: {
 						fn: this.changePage, 
@@ -130,12 +159,11 @@ Ext.onReady(function(){
 					            var selectedRecord = ddSource.dragData.records[0],
 									docked = panel.getDockedComponent(0),
 									store = docked.store;
-								
-									console.log("shelf?", panel.shelf);
-								
-								store.proxy.data.books.push( selectedRecord.raw );
+								store.proxy.data.books.push( selectedRecord.raw || selectedRecord.data);
 								docked.doRefresh();
-					            ddSource.view.store.remove(selectedRecord);
+								if(ddSource.view) {
+									ddSource.view.store.remove(selectedRecord);
+								}
 					            return true;
 					        }
 					    });
@@ -195,7 +223,8 @@ Ext.onReady(function(){
 							if(win.afterSave && typeof win.afterSave === "function") win.afterSave(instance); 
 							win.close();
 						} else {
-							console.log(shelf);
+							//console.log(shelf);
+							win.close();
 						}
 					}
 				});

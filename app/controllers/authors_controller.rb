@@ -7,10 +7,7 @@ class AuthorsController < ApplicationController
     resultados = Sunspot.search(Author) do
       keywords(query)
     end
-    @ext_response = {
-      :authors => resultados.results
-    }    
-    respond_with @ext_response
+    respond_with resultados.results
   end
   
   def show

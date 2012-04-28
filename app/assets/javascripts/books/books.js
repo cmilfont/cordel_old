@@ -262,6 +262,9 @@ Ext.onReady(function(){
 				var store = Ext.data.StoreManager.lookup('authorStore');
 				store.loadData(author);
 				formPanel.down("combo").select(author);
+				
+				//console.log("setou o id?", formPanel.down("combo").getValue() );
+				
 				$(link).remove();
 			}
 		});
@@ -283,10 +286,7 @@ Ext.onReady(function(){
 						params: { 'authenticity_token': formPanel.token },
 		                waitMsg: 'Uploading your book...',
 		                success: function(fp, action) {
-		            
-					
-							console.log("action", action);
-							
+
 							var template = [
 								'<li>',
 								'	<a href="/books/{id}">',
@@ -294,7 +294,7 @@ Ext.onReady(function(){
 								'	</a>',
 								'</li>'
 							];
-		            
+							
 							new Ext.XTemplate(template).append('books', JSON.parse(action.result.book));
 							formPanel.up('window').destroy();
 		                },
@@ -346,18 +346,26 @@ Ext.onReady(function(){
 								proxy: {
 						        	type: 'ajax', url : '/authors.json',
 						        	reader: {
-						            	type: 'json', root: 'authors'
+						            	type: 'json'//, root: 'authors'
 						        	}
 								}
 							}),
 							name: 'book[author_id]',
 							typeAhead:true, 
+							minChars: 3,
+							typeAheadDelay: 0,
 							forceSelection:false,
-							allowBlank: true,
+							allowBlank: false,
 						    queryMode: 'remote',
 						    displayField: 'name',
 						    valueField: 'id',
-						    xtype: 'combo'
+						    xtype: 'combo',
+							listeners: {
+								blur: function(field) {
+									//field.onLoad();
+									field.doRawQuery();
+								}
+							}
 						}, {
 				            xtype: 'splitter'
 				        },{

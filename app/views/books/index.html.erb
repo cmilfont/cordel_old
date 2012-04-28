@@ -24,7 +24,7 @@
 
 <ul id="books">
 <% @books.each{|book|  %>
-	<li class="book_list"><%= link_to image_tag(book.thumb_image_path, :border => 0, :title => book.title, :alt => book.title), book %></li>
+	<li class="book_list"><%= link_to image_tag(book.thumb_image_path, :border => 0, :book => book.to_json(:include => :author, :methods => [:thumb_image_path]) ,:title => book.title, :alt => book.title), book %></li>
 <% } %>
 </ul>
 

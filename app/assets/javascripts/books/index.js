@@ -19,12 +19,24 @@ $(function(){
 		return false;
 	});
 	
-	
 	$("a[href^='#/shelves/']").click(function(){
 		var id = $(this).attr("href").replace('#/shelves/', "");
-//		console.log( id.replace('#/shelves/', ""));
 		Ext.create(Cordel.ShelfWindow, { shelf_id: id }).show();
 		return false;
+	});
+	
+	Ext.onReady(function(){
+
+		$(".book_list a img").each(function(index, img){
+			var json = JSON.parse( $(img).attr("book") );
+			new Ext.dd.DragSource(img, {
+				ddGroup: 'ShelfBook'
+				, dragData: {
+					records: [ Ext.create('Book', json ) ]
+				}
+			})
+		});
+		
 	});
 	
 })
