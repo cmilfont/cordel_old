@@ -17,7 +17,9 @@ Cordel::Application.routes.draw do
     end
   end
   
-  resources :shelves
+  resources :shelves do
+    get :put_the_book_on_the_shelf, :path_prefix => '/shelves/:id', :requirements => { :extra => :book_id }, :on => :member
+  end
   
   resources :authors
   

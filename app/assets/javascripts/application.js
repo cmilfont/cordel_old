@@ -5,7 +5,9 @@
 // the compiled file.
 //
 //= require jquery
+//= require heatmap
 //= require jquery_ujs
+//= require djr
 //= require ext-all
 //= require base
 //= require model

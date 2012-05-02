@@ -59,8 +59,6 @@ Ext.onReady(function(){
 				pageData = paging.getPageData(),
 				fromRecord = pageData.fromRecord - 1,
 				store = paging.store;
-				
-			//console.log("changepage",  paging.store,  pageData);
 
 			shelfinternalpanel1.removeAll(true);
 			shelfinternalpanel2.removeAll(true);
@@ -78,29 +76,20 @@ Ext.onReady(function(){
 				this.arrangeBookshelf(fromRecord, fromRecord + 6, store, shelfinternalpanel3);
 			}
 
-			/*
-			store.getRange(fromRecord, fromRecord + 6).forEach(function(book){
-				if(book) shelfinternalpanel1.add( panel.createBookContainer(book) );
-			});
-
-			fromRecord = fromRecord + 6;
-			if(fromRecord < pageData.toRecord) {
-				store.getRange(fromRecord, fromRecord + 6).forEach(function(book){
-					if(book) shelfinternalpanel2.add( panel.createBookContainer(book) );
-				});
-			}
-
-			fromRecord = fromRecord + 6;
-			if(fromRecord < pageData.toRecord) {
-				store.getRange(fromRecord, fromRecord + 6).forEach(function(book){
-					if(book) shelfinternalpanel3.add( panel.createBookContainer(book) );
-				});
-			}*/
-
 		},
 		setShelf: function(shelf) {
 			this.updateBooks( shelf.books() );
 			this.shelf = shelf;
+		},
+		destroyShelf: function() {
+			var win = this.up("window");
+			var shelves = new ShelvesController;
+			shelves.destroy({
+				id: win.shelf_id
+			}, function(){
+				win.destroy();
+				win.afterDestroy();
+			})
 		},
 		updateBooks: function(books) {
 			
@@ -111,15 +100,14 @@ Ext.onReady(function(){
 				pageSize: 18, 
 				model: 'Book',
 				data: { books: lista },
-				proxy: { type: 'memory', reader:{ type: 'json', root: 'books' }	}
+				proxy: {
+					type: 'memory',
+					reader: { 
+						type: 'json', 
+						root: 'books'
+					}
+				}
 			});
-
-/*
-			books.setProxy(Ext.create('Ext.data.proxy.Memory', {
-				data: lista
-			}));*/
-
-
 
 			this.addDocked([{
 			    xtype: 'pagingtoolbar', 
@@ -128,11 +116,18 @@ Ext.onReady(function(){
 				layout : {	align: 'middle', type : 'hbox',	pack : 'center'	},
 				renderTpl : Cordel.shelfPanelTemplate,
 				store: store,
-				
-				listeners: {
-					change: {
-						fn: this.changePage, 
-						scope: this
+				items: [{
+					text: 'Delete'
+					, frame: true
+					, baseCls: ""
+					, xtype: 'button'
+					, scope: this
+					, handler:  this.destroyShelf
+				}],
+				listeners: { 
+					change: { 
+						fn: this.changePage
+						,scope: this 
 					}
 				}
 			}]);
@@ -158,12 +153,38 @@ Ext.onReady(function(){
 					        notifyDrop  : function(ddSource, e, data){
 					            var selectedRecord = ddSource.dragData.records[0],
 									docked = panel.getDockedComponent(0),
-									store = docked.store;
-								store.proxy.data.books.push( selectedRecord.raw || selectedRecord.data);
-								docked.doRefresh();
-								if(ddSource.view) {
-									ddSource.view.store.remove(selectedRecord);
-								}
+									store = docked.store,
+									book = selectedRecord.raw || selectedRecord.data;
+
+								
+								var shelves = new ShelvesController;
+								shelves.put_the_book_on_the_shelf({
+									id: panel.up("window").shelf_id ,
+									book_id: book.id
+								}, function(shelf) {
+									store.proxy.data.books.push( book ); 
+							        docked.doRefresh();
+									
+									if(ddSource.view) {
+										ddSource.view.store.remove(selectedRecord);
+									}
+									
+								});
+								
+/*
+								var Shelf = Ext.ModelManager.getModel('Shelf');
+								Shelf.load( panel.up("window").shelf_id , {
+								    success: function(shelf) {
+										var books = shelf.books();
+										books.add(book);
+										books.sync();
+										
+										store.proxy.data.books.push( book ); 
+								        docked.doRefresh();
+										
+								    }
+								});*/
+
 					            return true;
 					        }
 					    });
@@ -192,15 +213,16 @@ Ext.onReady(function(){
 		},
 		initComponent: function() {
 			Ext.applyIf(this, {
-			    title: 'Shelf: ',
-				frame: true,
-				border: "0 0 0 0",	padding: "0 0 0 0",
-				bodyBorder: false,
-				bodyStyle: { 'background': '#859A89', "border-color": '#CEAE91' },
-			    layout: 'fit'
+			    title: 'Shelf: '
+				, layout: 'fit'
+				, frame: true
+				, border: "0 0 0 0"
+				, padding: "0 0 0 0"
+				, bodyBorder: false
+				, bodyStyle: { 'background': '#859A89', "border-color": '#CEAE91' }
 				, items:  [{xtype: 'shelfpanel'}]
-				, listeners: {
-					afterrender: this.loadShelf
+				, listeners: { 
+					afterrender: this.loadShelf 
 				}
 			});
 			this.resizable = false;
@@ -215,15 +237,19 @@ Ext.onReady(function(){
 			var win = this, 
 				form = win.down("form");
 			if( form.getForm().isValid() ) {
-				var shelf = Ext.create('Shelf', Ext.applyIf( form.getForm().getValues(), {user_id: current_user.id}) );
+				var shelf = Ext.create('Shelf', 
+										Ext.applyIf( form.getForm().getValues(), {user_id: current_user.id}));
 				shelf.save({
 					callback: function(instance) {
 						if( instance.get("id") ) {
-							Ext.create(Cordel.ShelfWindow, { shelf_id: instance.get("id") }).show();
-							if(win.afterSave && typeof win.afterSave === "function") win.afterSave(instance); 
+							Ext.create(Cordel.ShelfWindow, { 
+								shelf_id: instance.get("id") 
+							}).show();
+							if( win.afterSave && typeof win.afterSave === "function") {
+								win.afterSave(instance);
+							}
 							win.close();
 						} else {
-							//console.log(shelf);
 							win.close();
 						}
 					}
@@ -232,20 +258,30 @@ Ext.onReady(function(){
 		},
 		initComponent: function() {
 			Ext.applyIf(this, {
-			    title: 'New Shelf',
-				frame: true,
-				bodyBorder: false,
-			    layout: 'fit',
-				items:  [{
+			    title: 'New Shelf'
+				, frame: true
+				, bodyBorder: false
+				, layout: 'fit'
+				, items:  [{
 					xtype: 'form'
 					, frame: true
 					, width: 300
 					, items: [{
-						fieldLabel: 'Name', name: 'name', anchor: '100%', msgTarget: 'side', labelWidth: 40, xtype: 'textfield',  allowBlank: false
+						fieldLabel: 'Name'
+						, name: 'name'
+						, anchor: '100%'
+						, msgTarget: 'side'
+						, labelWidth: 40
+						, xtype: 'textfield'
+						,  allowBlank: false
 					}]
-				}],
-		        buttons: [
-					{text: 'Save', handler: this.save, scope: this}
+				}]
+		        , buttons: [
+					{
+						text: 'Save'
+						, handler: this.save
+						, scope: this
+					}
 				]
 			});
 			this.resizable = false;
