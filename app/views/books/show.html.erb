@@ -6,32 +6,7 @@
   <p><%= image_tag(@book.small_image_path, :alt => @book.title)%></p>
 </div>
 
-<h1><%=h @book.title %></h1>
-
-<p>
-  <b>TITLE:</b>
-  <%=h @book.title %>
-</p>
-
-<p>
-  <b>AUTHOR:</b>
-  <%=h @book.try(:author).try(:name) %>
-</p>
-
-<p>
-  <b>YEAR:</b>
-  <%=h @book.year %>
-</p>
-
-<p>
-  <b>EDITION:</b>
-  <%=h @book.edition %>
-</p>
-
-<p>
-  <b>PUBLISHER:</b>
-  <%=h @book.publisher %>
-</p>
+<%= render :partial => "view_book" %>
 
 <p>
   <b>PAGES:</b>

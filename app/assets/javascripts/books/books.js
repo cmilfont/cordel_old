@@ -185,6 +185,10 @@ Ext.onReady(function(){
 		initComponent: function() {
 			Ext.applyIf(this, {
 				
+				selModel: {
+					mode: "MULTI"
+				},
+				
 				viewConfig: {
 					plugins: {
 						ddGroup: 'ShelfBook',

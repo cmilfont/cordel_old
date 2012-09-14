@@ -1,5 +1,5 @@
 class Shelf < ActiveRecord::Base
-    
+  
   validates_presence_of :name
   
   belongs_to :user
@@ -7,5 +7,6 @@ class Shelf < ActiveRecord::Base
   
   has_many :shelved_books
   has_many :books, :through => :shelved_books
+
   
 end

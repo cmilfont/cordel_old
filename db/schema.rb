@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120406210704) do
+ActiveRecord::Schema.define(:version => 20120913211210) do
 
   create_table "authors", :force => true do |t|
     t.string   "name"
@@ -47,6 +47,13 @@ ActiveRecord::Schema.define(:version => 20120406210704) do
   end
 
   add_index "pages", ["book_id"], :name => "index_pages_on_book_id"
+
+  create_table "people", :force => true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "shelved_books", :force => true do |t|
     t.integer  "book_id"

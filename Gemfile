@@ -5,6 +5,9 @@ gem 'rails', '3.1.3'
 gem 'compass'
 
 gem "djr"
+ gem 'rjb',           '>= 1.4.0'
+
+gem 'will_paginate', '3.0.3'
 
 gem 'mysql2', '0.3.11'
 gem "paperclip"

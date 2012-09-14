@@ -28,7 +28,10 @@
 <% } %>
 </ul>
 
-<div id="pagination"></div>
+<div id="pagination">
+	<%= will_paginate @books %>
+	
+</div>
 
 <script type="text/javascript" charset="utf-8" src="/djr"></script>
 <%= javascript_include_tag "books/shelves" %>

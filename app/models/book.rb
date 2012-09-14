@@ -1,5 +1,15 @@
 class Book < ActiveRecord::Base
   
+  # scope :my_books, lambda {|user_id|
+  #   where("user_id = ?", user_id)
+  # }
+  
+  scope :periodo, lambda {|inicio=nil, fim=nil|
+    if inicio.present? && fim.present?
+      where("year between ? and ?", inicio, fim) 
+    end
+  }
+  
 #  attr_accessible :thumb_image_path
   
   belongs_to :user
@@ -64,8 +74,8 @@ class Book < ActiveRecord::Base
     book.save
   end
   
-  def self.mybooks(user)
-    where(:user_id => user.id)
+  def self.mybooks(user, page=1, per_page=5)
+    where(:user_id => user.id).paginate :page => page, :per_page => per_page
   end
 
   def large_image_path

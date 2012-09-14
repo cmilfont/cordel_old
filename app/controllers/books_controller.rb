@@ -1,11 +1,18 @@
 class BooksController < ApplicationController
-
-  respond_to :html, :json
+  
+  before_filter :find_book, :only => [:show, :update, :destroy, :recomendar]
+  respond_to :html, :json, :sencha
+  
+  def recomendar
+    @email = params[:email]
+    BookMailer.recomendar(@email, @book)
+    respond_with @book
+  end
 
   def index
     @user = current_user
     if(@user.present?)
-      @books = Book.mybooks(current_user)
+      @books = Book.mybooks(current_user, params[:page])
       @shelves = Shelf.where(:user_id => @user.id)
     else
       @books = []
@@ -52,7 +59,6 @@ class BooksController < ApplicationController
   
   def show
     @user = current_user
-    @book = Book.find(params[:id])
     respond_with @book, :include => :author, :methods => [:thumb_image_path]
   end
 
@@ -74,15 +80,13 @@ class BooksController < ApplicationController
   end
   
   def update
-    @book = Book.find params[:id]
     params[:book].delete :id
     @book.update_attributes(params[:book])    
     respond_with @book
   end
   
   def destroy
-    @book = Book.find(params[:id])
-
+    
     if require_owner(@book)
       Sunspot.remove @book
       @book.destroy
@@ -93,6 +97,10 @@ class BooksController < ApplicationController
   end
   
   private
+  def find_book
+    @book = Book.find(params[:id])
+  end
+  
   def require_owner(book)
     unless current_user.owner_of(book)
       flash[:notice] = "You must be owner to access this page"

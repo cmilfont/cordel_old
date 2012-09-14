@@ -151,6 +151,9 @@ Ext.onReady(function(){
 						Ext.create('Ext.dd.DropTarget', panelDropTargetEl, {
 					        ddGroup: 'ShelfBook',
 					        notifyDrop  : function(ddSource, e, data){
+								
+								console.log("Source", ddSource);
+								
 					            var selectedRecord = ddSource.dragData.records[0],
 									docked = panel.getDockedComponent(0),
 									store = docked.store,

@@ -1,5 +1,7 @@
 Cordel::Application.routes.draw do
 
+  resources :people
+
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" } do
     get "sign_in",  :to => "devise/sessions#new"
     get "sign_up",  :to => "devise/registrations#new"
@@ -12,9 +14,15 @@ Cordel::Application.routes.draw do
   end
 
   resources :books do
+    
+    member do
+      post :recomendar
+    end
+    
     collection do
       get :search
     end
+    
   end
   
   resources :shelves do
@@ -22,6 +30,14 @@ Cordel::Application.routes.draw do
   end
   
   resources :authors
+  
+  resources :js do
+    
+    collection do
+      get :scaffold
+    end
+    
+  end
   
   root :to => "home#index"
   
